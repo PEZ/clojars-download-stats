@@ -2,7 +2,7 @@
   "State management for CI daily updates without database.
 
    Maintains state.edn with ID mappings for artifacts and versions,
-   allowing daily appends to SQL files without rebuilding the database."
+   allowing daily SQL file generation without rebuilding the database."
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as str]))

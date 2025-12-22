@@ -111,13 +111,13 @@ INSERT INTO downloads (date, artifact_id, version_id, downloads) VALUES ...
 
 The CI workflow runs daily and uses `state.edn` to track ID mappings—no database rebuild required:
 
-1. **Fetch** yesterday's Clojars stats via HTTP (or fill gaps if CI missed days)
+1. **Fetch** Clojars stats via HTTP (fills any gaps since last run)
 2. **Assign IDs** for any new artifacts/versions using state.edn
-3. **Append** SQL statements to the appropriate daily file
-4. **Update** state.edn with new IDs
+3. **Write** SQL file for each new date (`data/YYYY/MM/DD.sql`)
+4. **Update** state.edn with new IDs and latest date
 5. **Commit** changes to git
 
-This makes daily updates fast (~1 second) and stateless.
+This makes daily updates fast (~1 second) and not requiring a database.
 
 ## What Downloads Measure
 
