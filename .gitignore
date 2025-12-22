@@ -25,5 +25,4 @@ Thumbs.db
 
 # Data files
 *.sqlite
-data/
 test-data/temp*
