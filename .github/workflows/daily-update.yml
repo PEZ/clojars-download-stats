@@ -19,8 +19,8 @@ jobs:
         with:
           bb: latest
 
-      - name: Fetch and update latest Clojars data
-        run: bb update-latest
+      - name: Fetch latest Clojars and append to exports
+        run: bb clojars.export.update
 
       - name: Commit and push changes
         run: |

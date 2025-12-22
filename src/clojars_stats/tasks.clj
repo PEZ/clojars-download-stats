@@ -4,7 +4,7 @@
    All tasks accept an optional --today YYYYMMDD flag to override
    the current date for testing purposes.
 
-   Example: bb fetch --today 20130215 ./test.sqlite"
+   Example: bb clojars.fetch --today 20130215 ./test.sqlite"
   (:require [babashka.cli :as cli]
             [clojars-stats.db :as db]
             [clojars-stats.export :as export]
@@ -37,38 +37,38 @@
 
 (defn ^:export import-db
   "Import SQL files into a new database.
-   Usage: bb import <db-path>"
+   Usage: bb files.import <db-path>"
   [args]
   (let [{:keys [args]} (parse-args args)
-        db-path (require-db-path args "import")]
+        db-path (require-db-path args "files.import")]
     (util/with-timing "Import"
       (import-ns/import-all! db-path))))
 
 (defn ^:export export-db
   "Export database to daily SQL files.
-   Usage: bb export <db-path>"
+   Usage: bb db.export <db-path>"
   [args]
   (let [{:keys [args]} (parse-args args)
-        db-path (require-db-path args "export")]
+        db-path (require-db-path args "db.export")]
     (util/with-timing "Export"
       (export/export-all! db-path))))
 
 (defn ^:export fetch-missing
   "Fetch missing dates from Clojars.
-   Usage: bb fetch <db-path>"
+   Usage: bb clojars.fetch <db-path>"
   [args]
   (let [{:keys [args]} (parse-args args)
-        db-path (require-db-path args "fetch")]
+        db-path (require-db-path args "clojars.fetch")]
     (db/init-db! db-path)
     (util/with-timing "Fetch"
       (fetch/fetch-and-store! db-path))))
 
 (defn ^:export update-and-export
   "Fetch missing dates and re-export all (for CI with DB).
-   Usage: bb update <db-path>"
+   Usage: bb db.export.update <db-path>"
   [args]
   (let [{:keys [args]} (parse-args args)
-        db-path (require-db-path args "update")]
+        db-path (require-db-path args "db.export.update")]
     (db/init-db! db-path)
     (let [before-latest (db/get-latest-date db-path)]
       (util/with-timing "Fetch"
@@ -79,62 +79,76 @@
             (export/export-all! db-path)))))))
 
 (defn ^:export status
-  "Show database and export status.
-   Usage: bb status <db-path>"
+  "Show status. Without args: state.edn status. With db-path: database status.
+   Usage: bb db.export.status [<db-path>]"
   [args]
   (let [{:keys [args]} (parse-args args)
-        db-path (require-db-path args "status")
-        db-stats (try (db/stats db-path) (catch Exception _ nil))
-        exported (export/get-exported-dates)
-        missing (try (fetch/find-missing-dates db-path) (catch Exception _ nil))]
+        db-path (first args)]
+    (if db-path
+      ;; Database status
+      (let [db-stats (try (db/stats db-path) (catch Exception _ nil))
+            exported (export/get-exported-dates)
+            missing (try (fetch/find-missing-dates db-path) (catch Exception _ nil))]
 
-    (println "\n=== Database Status ===")
-    (if db-stats
-      (do
-        (println (format "  Artifacts: %,d" (:artifacts db-stats)))
-        (println (format "  Versions:  %,d" (:versions db-stats)))
-        (println (format "  Downloads: %,d rows" (:download-rows db-stats)))
-        (println (format "  Date range: %s to %s"
-                         (get-in db-stats [:date-range :earliest])
-                         (get-in db-stats [:date-range :latest]))))
-      (println "  Database not found or empty"))
+        (println "\n=== Database Status ===")
+        (if db-stats
+          (do
+            (println (format "  Artifacts: %,d" (:artifacts db-stats)))
+            (println (format "  Versions:  %,d" (:versions db-stats)))
+            (println (format "  Downloads: %,d rows" (:download-rows db-stats)))
+            (println (format "  Date range: %s to %s"
+                             (get-in db-stats [:date-range :earliest])
+                             (get-in db-stats [:date-range :latest]))))
+          (println "  Database not found or empty"))
 
-    (println "\n=== Export Status ===")
-    (if (seq exported)
-      (let [sorted-dates (sort exported)]
-        (println (format "  %d daily files exported (%s to %s)"
-                         (count exported) (first sorted-dates) (last sorted-dates))))
-      (println "  No exports found"))
+        (println "\n=== Export Status ===")
+        (if (seq exported)
+          (let [sorted-dates (sort exported)]
+            (println (format "  %d daily files exported (%s to %s)"
+                             (count exported) (first sorted-dates) (last sorted-dates))))
+          (println "  No exports found"))
 
-    (println "\n=== Clojars Sync ===")
-    (if (seq missing)
-      (println (format "  %d dates pending (%s to %s) - may not be available on Clojars yet"
-                       (count missing) (first missing) (last missing)))
-      (println "  Up to date through yesterday"))
+        (println "\n=== Clojars Sync ===")
+        (if (seq missing)
+          (println (format "  %d dates pending (%s to %s) - may not be available on Clojars yet"
+                           (count missing) (first missing) (last missing)))
+          (println "  Up to date through yesterday"))
 
-    (println)))
+        (println))
+
+      ;; State status (no db-path)
+      (if-let [s (state/load-state)]
+        (do
+          (println "\n=== State Status ===")
+          (println (format "  Artifacts:       %,d" (count (:artifacts s))))
+          (println (format "  Versions:        %,d" (count (:versions s))))
+          (println (format "  Next artifact ID: %d" (:next-artifact-id s)))
+          (println (format "  Next version ID:  %d" (:next-version-id s)))
+          (println (format "  Latest date:      %s" (:latest-date s)))
+          (println))
+        (println "No state.edn found. Run 'bb db.export.generate-state <db>' to create one.")))))
 
 ;;; ============ State-Based CI Tasks (no database required) ============
 
 (defn ^:export generate-state
   "Generate state.edn from an existing database.
-   Usage: bb generate-state <db-path>"
+   Usage: bb db.export.generate-state <db-path>"
   [args]
   (let [{:keys [args]} (parse-args args)
-        db-path (require-db-path args "generate-state")]
+        db-path (require-db-path args "db.export.generate-state")]
     (util/with-timing "Generate state"
       (state/generate-state-from-db! db-path))))
 
 (defn ^:export update-day
   "Fetch a single day and append to exports (no database required).
    Uses state.edn for ID mappings.
-   Usage: bb update-day <date>"
+   Usage: bb clojars.export.day <date>"
   [args]
   (let [{:keys [args]} (parse-args args)
         date-str (first args)]
     (when-not date-str
-      (println "Usage: bb update-day <date>")
-      (println "Example: bb update-day 20251221")
+      (println "Usage: bb clojars.export.day <date>")
+      (println "Example: bb clojars.export.day 20251221")
       (System/exit 1))
     (util/with-timing "Update day"
       (state/update-daily! date-str))))
@@ -142,7 +156,7 @@
 (defn ^:export update-latest
   "Fetch all missing dates from Clojars up to yesterday (no database required).
    Fills any gaps since last update. Idempotent - safe for CI cron jobs.
-   Usage: bb update-latest"
+   Usage: bb clojars.export.update"
   [args]
   (let [_ (parse-args args)
         yesterday (util/yesterday)
@@ -158,19 +172,3 @@
         (doseq [date dates-to-fetch]
           (util/with-timing (format "Fetch %s" date)
             (state/update-daily! date)))))))
-
-(defn ^:export state-status
-  "Show state.edn status (for CI debugging).
-   Usage: bb state-status"
-  [args]
-  (let [_ (parse-args args)]  ; Still parse for potential future options
-    (if-let [s (state/load-state)]
-      (do
-        (println "\n=== State Status ===")
-        (println (format "  Artifacts:       %,d" (count (:artifacts s))))
-        (println (format "  Versions:        %,d" (count (:versions s))))
-        (println (format "  Next artifact ID: %d" (:next-artifact-id s)))
-        (println (format "  Next version ID:  %d" (:next-version-id s)))
-        (println (format "  Latest date:      %s" (:latest-date s)))
-        (println))
-      (println "No state.edn found. Run 'bb generate-state <db>' to create one."))))

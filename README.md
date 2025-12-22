@@ -44,7 +44,7 @@ git clone https://github.com/PEZ/clojars-download-stats
 cd clojars-download-stats
 
 # Create a local database from SQL exports
-bb import ./clojars-downloads.sqlite
+bb files.import ./clojars-downloads.sqlite
 
 # Done! Query with your favorite SQLite tool
 sqlite3 ./clojars-downloads.sqlite "SELECT * FROM artifacts LIMIT 5"
@@ -56,7 +56,7 @@ After the initial import, just pull and reimport:
 
 ```sh
 git pull
-bb import ./clojars-downloads.sqlite
+bb files.import ./clojars-downloads.sqlite
 ```
 
 The import is incremental, reimporting only the missing month(s) with new data. A daily update takes seconds.
@@ -64,7 +64,7 @@ The import is incremental, reimporting only the missing month(s) with new data. 
 You can also fetch directly from Clojars to your database:
 
 ```sh
-bb fetch ./clojars-downloads.sqlite
+bb clojars.fetch ./clojars-downloads.sqlite
 ```
 
 ## For maintainers of the repoistory
@@ -72,15 +72,18 @@ bb fetch ./clojars-downloads.sqlite
 ### Tasks
 
 ```sh
-bb import <db-path>     # SQL files → SQLite (incremental if DB exists)
-bb export <db-path>     # Database → monthly SQL files (not optimized, takes about an hour)
-bb fetch <db-path>      # Fetch missing dates from Clojars → database
-bb update <db-path>     # Fetch + export (for manual updates)
-bb status <db-path>     # Show database and export status
+# Database tasks (require SQLite)
+bb files.import <db-path>           # SQL files → SQLite (incremental if DB exists)
+bb db.export <db-path>              # Database → daily SQL files (slow, ~1 hour)
+bb clojars.fetch <db-path>          # Fetch missing dates from Clojars → database
+bb db.export.update <db-path>       # Fetch + export (for manual updates)
+bb db.export.status <db-path>       # Show database and export status
+bb db.export.generate-state <db-path> # Generate state.edn from database
 
-# CI-specific tasks (no database required):
-bb update-latest        # Fetch today's data → append to SQL files
-bb state-status         # Show state.edn summary
+# CI tasks (no database required, use state.edn)
+bb clojars.export.update            # Fetch missing days → append to SQL files
+bb clojars.export.day <date>        # Fetch one specific day → append to SQL files
+bb db.export.status                 # Show state.edn summary (no args)
 ```
 
 ## Database Schema
@@ -108,9 +111,9 @@ INSERT INTO downloads (date, artifact_id, version_id, downloads) VALUES ...
 
 The CI workflow runs daily and uses `state.edn` to track ID mappings—no database rebuild required:
 
-1. **Fetch** yesterday's Clojars stats via HTTP
+1. **Fetch** yesterday's Clojars stats via HTTP (or fill gaps if CI missed days)
 2. **Assign IDs** for any new artifacts/versions using state.edn
-3. **Append** SQL statements to the appropriate monthly file
+3. **Append** SQL statements to the appropriate daily file
 4. **Update** state.edn with new IDs
 5. **Commit** changes to git
 

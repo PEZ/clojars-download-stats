@@ -18,30 +18,26 @@
                     (System/exit (if (zero? failed) 0 1)))}
 
   ;; Database-based tasks (require SQLite)
-  import {:doc "Import SQL files into a new SQLite database"
-          :task (tasks/import-db *command-line-args*)}
+  files.import {:doc "Import SQL files into a new SQLite database"
+                :task (tasks/import-db *command-line-args*)}
 
-  export {:doc "Export database to monthly SQL files"
-          :task (tasks/export-db *command-line-args*)}
+  clojars.fetch {:doc "Fetch missing dates from Clojars into database"
+                 :task (tasks/fetch-missing *command-line-args*)}
 
-  fetch {:doc "Fetch missing dates from Clojars into database"
-         :task (tasks/fetch-missing *command-line-args*)}
+  db.export {:doc "Export database to monthly SQL files"
+             :task (tasks/export-db *command-line-args*)}
 
-  update {:doc "Fetch missing dates and export (for CI with DB)"
-          :task (tasks/update-and-export *command-line-args*)}
+  db.export.update {:doc "Fetch missing dates, updates database, and export files"
+                    :task (tasks/update-and-export *command-line-args*)}
 
-  status {:doc "Show database and export status"
-          :task (tasks/status *command-line-args*)}
+  db.export.generate-state {:doc "Generate state.edn from existing database"
+                            :task (tasks/generate-state *command-line-args*)}
 
-  ;; State-based tasks (no SQLite required - for lightweight CI)
-  generate-state {:doc "Generate state.edn from existing database"
-                  :task (tasks/generate-state *command-line-args*)}
+  clojars.export.day {:doc "Fetch one specific day and append to exports (no DB)"
+                      :task (tasks/update-day *command-line-args*)}
 
-  state-status {:doc "Show state.edn status"
-                :task (tasks/state-status *command-line-args*)}
+  clojars.export.update {:doc "Fetch missing days from Clojars, and append to export (no DB)"
+                         :task (tasks/update-latest *command-line-args*)}
 
-  update-day {:doc "Fetch one specific day and append to exports (no DB)"
-              :task (tasks/update-day *command-line-args*)}
-
-  update-latest {:doc "Fetch yesterday from Clojars (no DB)"
-                 :task (tasks/update-latest *command-line-args*)}}}
+  db.export.status {:doc "Show status (no args: state, with db-path: database)"
+                    :task (tasks/status *command-line-args*)}}}

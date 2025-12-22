@@ -119,8 +119,8 @@
   []
   (println "\n=== Test: Status Command ===")
 
-  (let [result (bb "status" test-db)]
-    (assert-success result "bb status exits successfully")
+  (let [result (bb "db.export.status" test-db)]
+    (assert-success result "bb db.export.status exits successfully")
     (assert= true (str/includes? (:out result) "4,000")
              "Status shows correct artifact count")
     (assert= true (str/includes? (:out result) "142,339")
