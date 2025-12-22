@@ -1,0 +1,29 @@
+name: Tests
+
+on:
+  push:
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'bb.edn'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Babashka
+        uses: DeLaGuardo/setup-clojure@12.5
+        with:
+          bb: latest
+
+      - name: Run unit tests (RCT)
+        run: bb test
+
+      - name: Run E2E tests
+        run: bb e2e-test
