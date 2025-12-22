@@ -1,0 +1,29 @@
+# Clojure/Java
+.cpcache/
+.nrepl-port
+.lsp/.cache/
+.clj-kondo/.cache/
+target/
+classes/
+*.jar
+*.class
+pom.xml
+pom.xml.asc
+
+# Editor
+.calva/output-window/
+.calva/repl.calva-repl
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data files
+*.sqlite
+data/
+test-data/temp*

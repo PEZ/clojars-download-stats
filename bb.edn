@@ -1,0 +1,47 @@
+{:paths ["src" "test"]
+ :deps {org.babashka/http-client {:mvn/version "0.4.22"}
+        org.babashka/cli {:mvn/version "0.8.62"}
+        io.github.matthewdowney/rich-comment-tests
+        {:git/tag "v1.0.3" :git/sha "a8711e9"}}
+ :pods {org.babashka/go-sqlite3 {:version "0.3.13"}}
+ :tasks
+ {:requires ([clojars-stats.tasks :as tasks])
+
+  ;; Testing
+  test {:doc "Run RCT unit tests (via bb)"
+        :requires ([com.mjdowney.rich-comment-tests.test-runner :as rct])
+        :task (rct/run-tests-in-file-tree! {:dirs #{"src"}})}
+
+  e2e-test {:doc "Run E2E integration tests"
+            :requires ([clojars-stats.e2e-test :as e2e])
+            :task (let [{:keys [failed]} (e2e/run-all-tests)]
+                    (System/exit (if (zero? failed) 0 1)))}
+
+  ;; Database-based tasks (require SQLite)
+  import {:doc "Import SQL files into a new SQLite database"
+          :task (tasks/import-db *command-line-args*)}
+
+  export {:doc "Export database to monthly SQL files"
+          :task (tasks/export-db *command-line-args*)}
+
+  fetch {:doc "Fetch missing dates from Clojars into database"
+         :task (tasks/fetch-missing *command-line-args*)}
+
+  update {:doc "Fetch missing dates and export (for CI with DB)"
+          :task (tasks/update-and-export *command-line-args*)}
+
+  status {:doc "Show database and export status"
+          :task (tasks/status *command-line-args*)}
+
+  ;; State-based tasks (no SQLite required - for lightweight CI)
+  generate-state {:doc "Generate state.edn from existing database"
+                  :task (tasks/generate-state *command-line-args*)}
+
+  update-daily {:doc "Fetch one day and append to exports (no DB)"
+                :task (tasks/update-daily *command-line-args*)}
+
+  update-latest {:doc "Fetch yesterday from Clojars (no DB)"
+                 :task (tasks/update-latest *command-line-args*)}
+
+  state-status {:doc "Show state.edn status"
+                :task (tasks/state-status *command-line-args*)}}}

@@ -1,0 +1,37 @@
+name: Daily Clojars Update
+
+on:
+  schedule:
+    # Run at 08:00 UTC daily (after Clojars has published yesterday's stats)
+    - cron: '0 8 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Babashka
+        uses: DeLaGuardo/setup-clojure@12.5
+        with:
+          bb: latest
+
+      - name: Fetch and update latest Clojars data
+        run: bb update-latest
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check if there are changes to commit
+          if git diff --quiet data/; then
+            echo "No new data to commit"
+          else
+            git add data/
+            git commit -m "chore: Update Clojars data for $(date -u +%Y-%m-%d)"
+            git push
+          fi
