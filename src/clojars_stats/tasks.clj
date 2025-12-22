@@ -124,32 +124,39 @@
     (util/with-timing "Generate state"
       (state/generate-state-from-db! db-path))))
 
-(defn ^:export update-daily
+(defn ^:export update-day
   "Fetch a single day and append to exports (no database required).
-   Uses state.edn for ID mappings. For CI daily updates.
-   Usage: bb update-daily <date>"
+   Uses state.edn for ID mappings.
+   Usage: bb update-day <date>"
   [args]
   (let [{:keys [args]} (parse-args args)
         date-str (first args)]
     (when-not date-str
-      (println "Usage: bb update-daily <date>")
-      (println "Example: bb update-daily 20251221")
+      (println "Usage: bb update-day <date>")
+      (println "Example: bb update-day 20251221")
       (System/exit 1))
-    (util/with-timing "Update daily"
+    (util/with-timing "Update day"
       (state/update-daily! date-str))))
 
 (defn ^:export update-latest
-  "Fetch the latest available date from Clojars (no database required).
-   Automatically determines yesterday's date and fetches it.
+  "Fetch all missing dates from Clojars up to yesterday (no database required).
+   Fills any gaps since last update. Idempotent - safe for CI cron jobs.
    Usage: bb update-latest"
   [args]
-  (let [_ (parse-args args)  ; Still parse for potential future options
+  (let [_ (parse-args args)
         yesterday (util/yesterday)
         latest-in-state (:latest-date (state/load-state))]
     (if (and latest-in-state (>= (compare latest-in-state yesterday) 0))
       (println (format "Already up to date (latest: %s)" latest-in-state))
-      (util/with-timing "Update latest"
-        (state/update-daily! yesterday)))))
+      (let [start (if latest-in-state
+                    (util/next-day latest-in-state)
+                    yesterday)  ; If no state, just fetch yesterday
+            dates-to-fetch (util/dates-range start yesterday)]
+        (println (format "Fetching %d missing date(s): %s to %s"
+                         (count dates-to-fetch) start yesterday))
+        (doseq [date dates-to-fetch]
+          (util/with-timing (format "Fetch %s" date)
+            (state/update-daily! date)))))))
 
 (defn ^:export state-status
   "Show state.edn status (for CI debugging).

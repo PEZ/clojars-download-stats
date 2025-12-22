@@ -37,8 +37,8 @@
   generate-state {:doc "Generate state.edn from existing database"
                   :task (tasks/generate-state *command-line-args*)}
 
-  update-daily {:doc "Fetch one day and append to exports (no DB)"
-                :task (tasks/update-daily *command-line-args*)}
+  update-day {:doc "Fetch one specific day and append to exports (no DB)"
+              :task (tasks/update-day *command-line-args*)}
 
   update-latest {:doc "Fetch yesterday from Clojars (no DB)"
                  :task (tasks/update-latest *command-line-args*)}

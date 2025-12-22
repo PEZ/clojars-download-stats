@@ -26,6 +26,22 @@
          (.minusDays 1)
          (.format (DateTimeFormatter/ofPattern "yyyyMMdd"))))))
 
+(def ^:private date-fmt (DateTimeFormatter/ofPattern "yyyyMMdd"))
+
+(defn next-day
+  "Get the next day as YYYYMMDD string."
+  [date-str]
+  (.format (.plusDays (LocalDate/parse date-str date-fmt) 1) date-fmt))
+
+(defn dates-range
+  "Generate date strings from start to end (inclusive)."
+  [start end]
+  (loop [current start
+         result []]
+    (if (> (compare current end) 0)
+      result
+      (recur (next-day current) (conj result current)))))
+
 ;;; ============ Timing ============
 
 (defmacro timed
@@ -74,5 +90,21 @@
 
   (format-duration 65000)
   ;=> "1m 5s"
+
+  ;; next-day increments date
+  (next-day "20241220")
+  ;=> "20241221"
+
+  ;; next-day handles month boundary
+  (next-day "20241231")
+  ;=> "20250101"
+
+  ;; dates-range generates inclusive range
+  (dates-range "20241220" "20241223")
+  ;=> ["20241220" "20241221" "20241222" "20241223"]
+
+  ;; dates-range empty when start > end
+  (dates-range "20241225" "20241220")
+  ;=> []
 
   :rcf)

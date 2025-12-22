@@ -3,28 +3,9 @@
   (:require [babashka.http-client :as http]
             [clojure.edn :as edn]
             [clojars-stats.db :as db]
-            [clojars-stats.util :as util])
-  (:import [java.time LocalDate]
-           [java.time.format DateTimeFormatter]))
+            [clojars-stats.util :as util]))
 
 (def clojars-start-date "20121101")
-
-(def ^:private date-fmt (DateTimeFormatter/ofPattern "yyyyMMdd"))
-
-(defn- yesterday-str []
-  (util/yesterday))
-
-(defn- next-day [date-str]
-  (.format (.plusDays (LocalDate/parse date-str date-fmt) 1) date-fmt))
-
-(defn- dates-range
-  "Generate date strings from start to end (inclusive)."
-  [start end]
-  (loop [current start
-         result []]
-    (if (> (compare current end) 0)
-      result
-      (recur (next-day current) (conj result current)))))
 
 (defn fetch-daily-stats
   "Fetch download stats for a date (YYYYMMDD) from Clojars.
@@ -43,10 +24,10 @@
   "Find dates not yet in database."
   [db-path]
   (let [latest (db/get-latest-date db-path)
-        start (if latest (next-day latest) clojars-start-date)
-        end (yesterday-str)]
+        start (if latest (util/next-day latest) clojars-start-date)
+        end (util/yesterday)]
     (when (<= (compare start end) 0)
-      (dates-range start end))))
+      (util/dates-range start end))))
 
 (defn fetch-and-store!
   "Fetch missing dates from Clojars and store in database.
@@ -71,31 +52,3 @@
               (when (zero? (mod (inc fetched) 100))
                 (progress-fn (format "  Progress: %d/%d" (inc fetched) total)))
               (recur (rest remaining) (inc fetched)))))))))
-
-^:rct/test
-(comment
-  ;; next-day increments date correctly
-  (next-day "20241220")
-  ;=> "20241221"
-
-  ;; next-day handles month boundary
-  (next-day "20241231")
-  ;=> "20250101"
-
-  ;; next-day handles February
-  (next-day "20240228")
-  ;=> "20240229"  ; 2024 is leap year
-
-  ;; dates-range generates inclusive range
-  (dates-range "20241220" "20241223")
-  ;=> ["20241220" "20241221" "20241222" "20241223"]
-
-  ;; dates-range with same start/end returns single date
-  (dates-range "20241220" "20241220")
-  ;=> ["20241220"]
-
-  ;; dates-range empty when start > end
-  (dates-range "20241225" "20241220")
-  ;=> []
-
-  :rcf)
