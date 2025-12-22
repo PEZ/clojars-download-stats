@@ -3,7 +3,7 @@
    Uses sqlite3 CLI for fast bulk export, then processes in memory."
   (:require [babashka.process :as p]
             [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as string]))
 
 ;; Default data directory
 (def default-data-dir "data")
@@ -15,24 +15,24 @@
   [db-path sql]
   (-> (p/shell {:out :string} "sqlite3" db-path sql)
       :out
-      str/split-lines))
+      string/split-lines))
 
 (defn- parse-artifact
   "Parse artifact line: id|group_id|artifact_id"
   [line]
-  (let [[id group-id artifact-id] (str/split line #"\|")]
+  (let [[id group-id artifact-id] (string/split line #"\|")]
     [(parse-long id) {:group-id group-id :artifact-id artifact-id}]))
 
 (defn- parse-version
   "Parse version line: id|version"
   [line]
-  (let [[id version] (str/split line #"\|")]
+  (let [[id version] (string/split line #"\|")]
     [(parse-long id) version]))
 
 (defn- parse-download
   "Parse download line: date|artifact_id|version_id|downloads"
   [line]
-  (let [[date artifact-id version-id downloads] (str/split line #"\|")]
+  (let [[date artifact-id version-id downloads] (string/split line #"\|")]
     {:date date
      :artifact-id (parse-long artifact-id)
      :version-id (parse-long version-id)
@@ -43,7 +43,7 @@
 (defn- escape-sql
   "Escape single quotes for SQL strings."
   [s]
-  (str/replace (str s) "'" "''"))
+  (string/replace (str s) "'" "''"))
 
 (defn- write-day-file!
   "Write a single day's SQL file given pre-loaded lookups."

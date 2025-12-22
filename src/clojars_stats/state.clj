@@ -5,7 +5,8 @@
    allowing daily SQL file generation without rebuilding the database."
   (:require [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.pprint :as pprint]
+            [clojure.string :as string]))
 
 ;; Default paths
 (def default-state-file "data/state.edn")
@@ -22,12 +23,12 @@
        (edn/read-string (slurp state-file))))))
 
 (defn save-state!
-  "Save state to state file."
+  "Save state to state file (pretty-printed for readable diffs)."
   ([state] (save-state! state {}))
   ([state config]
    (let [state-file (or (:state-file config) default-state-file)]
      (io/make-parents state-file)
-     (spit state-file (pr-str state)))))
+     (spit state-file (with-out-str (pprint/pprint state))))))
 
 (defn init-state
   "Create initial empty state."
@@ -100,7 +101,7 @@
 ;;; ============ SQL Generation ============
 
 (defn- escape-sql-string [s]
-  (str/replace (str s) "'" "''"))
+  (string/replace (str s) "'" "''"))
 
 (defn generate-daily-sql
   "Generate SQL INSERT statements for a day's Clojars data.
@@ -140,7 +141,7 @@
 (defn generate-artifact-inserts
   "Generate INSERT statements for new artifacts."
   [new-artifacts]
-  (str/join
+  (string/join
    (for [{:keys [id group-id artifact-id]} new-artifacts]
      (format "INSERT OR IGNORE INTO artifacts (id, group_id, artifact_id) VALUES (%d, '%s', '%s');\n"
              id (escape-sql-string group-id) (escape-sql-string artifact-id)))))
@@ -148,7 +149,7 @@
 (defn generate-version-inserts
   "Generate INSERT statements for new versions."
   [new-versions]
-  (str/join
+  (string/join
    (for [{:keys [id version]} new-versions]
      (format "INSERT OR IGNORE INTO versions (id, version) VALUES (%d, '%s');\n"
              id (escape-sql-string version)))))

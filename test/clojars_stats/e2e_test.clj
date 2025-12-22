@@ -10,7 +10,7 @@
             [clojars-stats.import :as import-ns]
             [clojars-stats.state :as state]
             [clojars-stats.util :as util]
-            [clojure.string :as str]))
+            [clojure.string :as string]))
 
 ;;; ============ Test Infrastructure ============
 
@@ -121,9 +121,9 @@
 
   (let [result (bb "db.export.status" test-db)]
     (assert-success result "bb db.export.status exits successfully")
-    (assert= true (str/includes? (:out result) "4,000")
+    (assert= true (string/includes? (:out result) "4,000")
              "Status shows correct artifact count")
-    (assert= true (str/includes? (:out result) "142,339")
+    (assert= true (string/includes? (:out result) "142,339")
              "Status shows correct download count")))
 
 (defn test-time-injection
@@ -184,9 +184,9 @@
 
           ;; Verify content has expected inserts
           (let [sql-content (slurp sql-file)]
-            (assert= true (str/includes? sql-content "INSERT")
+            (assert= true (string/includes? sql-content "INSERT")
                      "SQL file contains INSERT statements")
-            (assert= true (str/includes? sql-content "downloads")
+            (assert= true (string/includes? sql-content "downloads")
                      "SQL file contains downloads table inserts")))
 
         ;; Verify state was updated
