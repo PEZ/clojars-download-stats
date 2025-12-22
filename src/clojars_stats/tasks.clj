@@ -6,6 +6,7 @@
 
    Example: bb clojars.fetch --today 20130215 ./test.sqlite"
   (:require [babashka.cli :as cli]
+            [babashka.fs :as fs]
             [clojars-stats.db :as db]
             [clojars-stats.export :as export]
             [clojars-stats.fetch :as fetch]
@@ -35,12 +36,24 @@
       (System/exit 1))
     db-path))
 
+(defn- confirm-new-db!
+  "Prompt user to confirm creating a new database. Exits if declined."
+  [db-path]
+  (when-not (fs/exists? db-path)
+    (print (format "Database '%s' does not exist. Create it? [y/N] " db-path))
+    (flush)
+    (let [response (read-line)]
+      (when-not (contains? #{"y" "Y" "yes" "Yes"} response)
+        (println "Aborted.")
+        (System/exit 0)))))
+
 (defn ^:export import-db
   "Import SQL files into a new database.
    Usage: bb files.import <db-path>"
   [args]
   (let [{:keys [args]} (parse-args args)
         db-path (require-db-path args "files.import")]
+    (confirm-new-db! db-path)
     (util/with-timing "Import"
       (import-ns/import-all! db-path))))
 
@@ -59,6 +72,7 @@
   [args]
   (let [{:keys [args]} (parse-args args)
         db-path (require-db-path args "clojars.fetch")]
+    (confirm-new-db! db-path)
     (db/init-db! db-path)
     (util/with-timing "Fetch"
       (fetch/fetch-and-store! db-path))))

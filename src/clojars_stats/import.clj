@@ -37,7 +37,7 @@
 
 (defn- files-to-import
   "Determine which SQL files need importing.
-   For fresh DB: all files. For existing DB: from latest date onwards."
+   For fresh DB: all files. For existing DB: files newer than latest date."
   [db-path sql-files]
   (let [db-file (io/file db-path)]
     (if-not (.exists db-file)
@@ -45,7 +45,7 @@
       (let [latest-date (db/get-latest-date db-path)]
         (if-not latest-date
           {:mode :fresh :files sql-files}
-          (let [files-needed (filter #(>= (compare (file->date %) latest-date) 0)
+          (let [files-needed (filter #(> (compare (file->date %) latest-date) 0)
                                      sql-files)]
             {:mode :incremental
              :latest-date latest-date
@@ -55,7 +55,7 @@
   "Import daily SQL files into database at db-path.
    Concatenates all files into a temp file with transaction wrapping,
    then feeds to sqlite3 CLI for efficient bulk import.
-   If DB exists: incremental import (only dates from latest onwards).
+   If DB exists: incremental import (only new files after latest date).
    If DB doesn't exist: fresh import of all files.
    Config options: :data-dir, :progress-fn"
   [db-path & {:keys [progress-fn data-dir] :or {progress-fn println} :as config}]
@@ -65,50 +65,55 @@
     (when (empty? sql-files)
       (throw (ex-info "No SQL files found" {:dir data-dir})))
 
-    (case mode
-      :fresh
+    (if (and (= mode :incremental) (empty? files))
+      ;; Already up to date - return early (skip expensive stats call)
       (do
-        (progress-fn (format "Fresh import: %d daily files into %s..." (count files) db-path))
-        (let [db-file (io/file db-path)]
-          (when (.exists db-file)
-            (.delete db-file)))
-        (db/init-db! db-path))
+        (progress-fn (format "Already up to date (DB has data through %s)" latest-date))
+        {:mode :up-to-date :latest-date latest-date})
 
-      :incremental
+      ;; Need to import files
       (do
-        (progress-fn (format "Incremental import: %d files from %s onwards (DB has data through %s)"
-                             (count files) latest-date latest-date))
-        (db/delete-downloads-from-date! db-path latest-date)
-        (progress-fn (format "  Cleared data from %s onwards" latest-date))))
+        (case mode
+          :fresh
+          (do
+            (progress-fn (format "Fresh import: %d daily files into %s..." (count files) db-path))
+            (let [db-file (io/file db-path)]
+              (when (.exists db-file)
+                (.delete db-file)))
+            (db/init-db! db-path))
 
-    ;; Create temp file with transaction wrapping
-    (let [temp-file (java.io.File/createTempFile "clojars-import" ".sql")
-          total-files (count files)]
-      (try
-        (progress-fn (format "  Writing %d files to temp file..." total-files))
-        (with-open [w (io/writer temp-file)]
-          (.write w "BEGIN TRANSACTION;\n")
-          (doseq [[i file] (map-indexed vector files)]
-            (when (zero? (mod (inc i) 500))
-              (progress-fn (format "    Progress: %d/%d files" (inc i) total-files)))
-            (io/copy file w))
-          (.write w "COMMIT;\n"))
+          :incremental
+          (progress-fn (format "Incremental import: %d new files (DB has data through %s)"
+                               (count files) latest-date)))
 
-        (let [temp-bytes (.length temp-file)]
-          (progress-fn (format "  Importing %.1f MB..." (/ temp-bytes 1024.0 1024.0)))
-          (let [result (process/shell {:in (io/input-stream temp-file)
-                                       :err :string
-                                       :continue true}
-                                      "sqlite3" db-path)]
-            (when (not= 0 (:exit result))
-              (throw (ex-info "Import failed" {:error (:err result)}))))
-          (progress-fn "Done!")
-          {:mode mode
-           :files total-files
-           :bytes temp-bytes
-           :stats (db/stats db-path)})
-        (finally
-          (.delete temp-file))))))
+        ;; Create temp file with transaction wrapping
+        (let [temp-file (java.io.File/createTempFile "clojars-import" ".sql")
+              total-files (count files)]
+          (try
+            (progress-fn (format "  Writing %d files to temp file..." total-files))
+            (with-open [w (io/writer temp-file)]
+              (.write w "BEGIN TRANSACTION;\n")
+              (doseq [[i file] (map-indexed vector files)]
+                (when (zero? (mod (inc i) 500))
+                  (progress-fn (format "    Progress: %d/%d files" (inc i) total-files)))
+                (io/copy file w))
+              (.write w "COMMIT;\n"))
+
+            (let [temp-bytes (.length temp-file)]
+              (progress-fn (format "  Importing %.1f MB..." (/ temp-bytes 1024.0 1024.0)))
+              (let [result (process/shell {:in (io/input-stream temp-file)
+                                           :err :string
+                                           :continue true}
+                                          "sqlite3" db-path)]
+                (when (not= 0 (:exit result))
+                  (throw (ex-info "Import failed" {:error (:err result)}))))
+              (progress-fn "Done!")
+              {:mode mode
+               :files total-files
+               :bytes temp-bytes
+               :stats (db/stats db-path)})
+            (finally
+              (.delete temp-file))))))))
 
 ^:rct/test
 (comment
