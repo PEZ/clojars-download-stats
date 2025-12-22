@@ -2,10 +2,8 @@ name: Tests
 
 on:
   push:
-    paths:
-      - 'src/**'
-      - 'test/**'
-      - 'bb.edn'
+    paths-ignore:
+      - 'data/**'
   pull_request:
   workflow_dispatch:
 
