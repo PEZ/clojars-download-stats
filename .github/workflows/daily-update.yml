@@ -2,8 +2,11 @@ name: Daily Clojars Update
 
 on:
   schedule:
-    # Run at 08:00 UTC daily (after Clojars has published yesterday's stats)
-    - cron: '0 8 * * *'
+    # Clojars publishes stats at 01:15 US Eastern (~06:15 UTC)
+    # Run at 07:00 UTC (primary) and 15:00 UTC (backup if morning run misses)
+    # The task is idempotent - if 07:00 succeeds, 15:00 will no-op
+    - cron: '0 7 * * *'
+    - cron: '0 15 * * *'
   workflow_dispatch: # Allow manual trigger
 
 permissions:
