@@ -4,12 +4,12 @@ A complete sqlite database ”mirroring” Clojars download statistics (Nov 2012
 
 ## Why This Exists
 
-Clojars publishes daily download stats. Querying it on the may hammer Clojar servers unecessarily. And I wanted to do some queries over time. I downloeded it all and made a sqlite database from it. Then I thought that maybe someone else wants this database too. Therefore this repo provides up-to-date daily download stats as SQL exports, one file per day.
+Clojars publishes daily download stats. Querying it on the may hammer Clojar servers unecessarily. And I wanted to do some queries over time. I downloeded it all and made a sqlite database from it. Then I thought that maybe someone else wants this database too. Therefore this repo provides up-to-date daily download stats as SQL exports, one file per day, plus scripts to import and update.
 
-## Also Included
+## Batteries Included
 
 * a Babashka task that creates a fully populated sqlite database for your local querying. It takes a few minutes to do the import once you have cloned the repository to your machine. This task can also be used for keeping your database up-to-date from the upstream repository.
-* a standalone update script, letting you eject from the upstream repo (saving your disk space).
+* a standalone update (Babashka) script, letting you eject from the upstream repo (saving your disk space).
 
 ## Database layout
 
