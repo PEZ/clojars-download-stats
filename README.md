@@ -4,7 +4,7 @@ A community mirror of Clojars download statistics (Nov 2012 - present).
 
 ## Why This Exists
 
-Clojars publishes daily download stats. Fetching the full history takes a long time or hammers their servers. Therefore this repo provides up-to-date daily download stats as SQL exports, plus Babashka tasks that lets you create a fully populated sqlite database for your local querying. It takes a few minutes to do the import once you have cloned the repository to your machine.
+Clojars publishes daily download stats. Querying it on the may hammer Clojar servers unecessarily. And I wanted to do some queries over time. I downloeded it all and made a sqlite database from it. Then I thought that maybe someone else wants this database too. Therefore this repo provides up-to-date daily download stats as SQL exports, plus Babashka tasks that creates a fully populated sqlite database for your local querying. It takes a few minutes to do the import once you have cloned the repository to your machine.
 
 ## Database layout
 
@@ -35,7 +35,7 @@ erDiagram
 
 As of December 2025:
 * Project size: ~6GB, mostly SQL files
-* Import time: **~4 minutes** (36M rows, no feedback during)
+* Import time: **~4 minutes** (No feedback during, sorry!)
 * Database size: 2.9GB
 
 ```sh
