@@ -34,8 +34,8 @@ erDiagram
 ### Create your database
 
 As of December 2025:
-* Project size: ~8GB, mostly SQL files
-* Import time: **~4 minutes** (36M rows)
+* Project size: ~6GB, mostly SQL files
+* Import time: **~4 minutes** (36M rows, no feedback during)
 * Database size: 2.9GB
 
 ```sh
