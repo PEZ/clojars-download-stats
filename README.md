@@ -1,10 +1,15 @@
 # Clojars Download Stats
 
-A community mirror of Clojars download statistics (Nov 2012 - present).
+A complete sqlite database ”mirroring” Clojars download statistics (Nov 2012 - present). (Well, the source SQL for it, please read on.)
 
 ## Why This Exists
 
-Clojars publishes daily download stats. Querying it on the may hammer Clojar servers unecessarily. And I wanted to do some queries over time. I downloeded it all and made a sqlite database from it. Then I thought that maybe someone else wants this database too. Therefore this repo provides up-to-date daily download stats as SQL exports, one file per day. There are also a Babashka task that creates a fully populated sqlite database for your local querying. It takes a few minutes to do the import once you have cloned the repository to your machine.
+Clojars publishes daily download stats. Querying it on the may hammer Clojar servers unecessarily. And I wanted to do some queries over time. I downloeded it all and made a sqlite database from it. Then I thought that maybe someone else wants this database too. Therefore this repo provides up-to-date daily download stats as SQL exports, one file per day.
+
+## Also Included
+
+* a Babashka task that creates a fully populated sqlite database for your local querying. It takes a few minutes to do the import once you have cloned the repository to your machine. This task can also be used for keeping your database up-to-date from the upstream repository.
+* a standalone update script, letting you eject from the upstream repo (saving your disk space).
 
 ## Database layout
 
@@ -146,6 +151,10 @@ These dates have no data on Clojars
 2022-01-15, 2022-02-13
 2023-03-26, 2023-04-23, 2023-11-26
 ```
+
+## If you See Something, Say Something
+
+The code in this repo is mostly slop coded. I've tried to monitor the AI and its output, but it produced a lot of code, and I ran out of time to be super vigilant about it... If you see something particularly funny, please file an issue. 🙏
 
 ## License
 
