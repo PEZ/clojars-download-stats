@@ -31,7 +31,7 @@
 
 (defn fetch-and-store!
   "Fetch missing dates from Clojars and store in database.
-   Returns count of dates fetched."
+   Returns count of dates successfully fetched."
   [db-path & {:keys [progress-fn] :or {progress-fn println}}]
   (let [missing (find-missing-dates db-path)
         total (count missing)]
@@ -43,12 +43,12 @@
         (loop [remaining missing
                fetched 0]
           (if (empty? remaining)
-            (do (progress-fn (format "Done! Fetched %d dates." fetched))
+            (do (progress-fn (format "Done! Fetched %d of %d dates." fetched total))
                 fetched)
-            (let [date (first remaining)]
-              (Thread/sleep 100) ; Be nice to Clojars
-              (when-let [data (fetch-daily-stats date)]
-                (db/store-daily-downloads! db-path date data))
-              (when (zero? (mod (inc fetched) 100))
+            (let [date (first remaining)
+                  _ (Thread/sleep 100) ; Be nice to Clojars
+                  data (fetch-daily-stats date)
+                  success? (and data (db/store-daily-downloads! db-path date data))]
+              (when (zero? (mod (+ fetched (if success? 1 0)) 100))
                 (progress-fn (format "  Progress: %d/%d" (inc fetched) total)))
-              (recur (rest remaining) (inc fetched)))))))))
+              (recur (rest remaining) (if success? (inc fetched) fetched)))))))))

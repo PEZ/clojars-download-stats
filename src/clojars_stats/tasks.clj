@@ -107,9 +107,10 @@
       (println "  No exports found"))
 
     (println "\n=== Clojars Sync ===")
-    (if missing
-      (println (format "  %d dates missing (fetch to update)" (count missing)))
-      (println "  Up to date with Clojars"))
+    (if (seq missing)
+      (println (format "  %d dates pending (%s to %s) - may not be available on Clojars yet"
+                       (count missing) (first missing) (last missing)))
+      (println "  Up to date through yesterday"))
 
     (println)))
 
