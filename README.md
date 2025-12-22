@@ -52,6 +52,8 @@ sqlite3 ./clojars-downloads.sqlite "SELECT * FROM artifacts LIMIT 5"
 
 ### Keeping Your Database Up To Date
 
+**Option A: Keep the repo (simplest)**
+
 After the initial import, just pull and reimport:
 
 ```sh
@@ -60,6 +62,28 @@ bb files.import ./clojars-downloads.sqlite
 ```
 
 The import is incremental, reimporting only the missing month(s) with new data. A daily update takes seconds.
+
+**Option B: Eject from the repo (saves disk space)**
+
+If you don't want to keep the ~6GB repo around, you can "eject" after the initial import:
+
+```sh
+# Initial import (from the cloned repo)
+bb files.import ~/data/clojars.sqlite
+
+# Copy the standalone update script
+cp update_clojars_stats.clj ~/data/
+
+# Now you can delete the cloned repo, if you fancy
+```
+
+To update your database later, run the standalone script:
+
+```sh
+bb ~/data/update_clojars_stats.clj ~/data/clojars.sqlite
+```
+
+The script fetches new days directly from Clojars—no repo needed. It's idempotent and fills any gap since your last update. **If it's a big gap, consider cloning the repo and using `bb files.import` instead.**
 
 ## For maintainers of the repoistory
 
@@ -110,12 +134,6 @@ The CI workflow runs daily and uses `state.edn` to track ID mappings—no databa
 3. **Write** SQL file for each new date (`data/YYYY/MM/DD.sql`)
 4. **Update** state.edn with new IDs and latest date
 5. **Commit** changes to git
-
-This makes daily updates fast (~1 second) and not requiring a database.
-
-## What Downloads Measure
-
-Downloads primarily reflect CI cache misses (~90% weekday traffic), not direct human adoption. Relative comparisons across libraries are meaningful.
 
 ## Known missing data on Clojars
 

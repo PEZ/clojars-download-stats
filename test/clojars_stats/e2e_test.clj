@@ -199,6 +199,60 @@
     (finally
       (teardown-temp-dir!))))
 
+(defn test-standalone-update-script
+  "Test the standalone update script for ejected users.
+   Loads the script and calls update-database! directly with mock-data."
+  []
+  (println "\n=== Test: Standalone Update Script ===")
+  (setup-temp-dir!)
+  (try
+    (let [temp-db (str temp-dir "/standalone-test.sqlite")
+          old-date "20251201"
+          mock-data {["test-lib" "test-lib"] {"1.0.0" 42 "2.0.0" 100}
+                     ["another" "lib"] {"0.1.0" 5}}]
+
+      ;; Create a minimal database with old date
+      (db/init-db! temp-db)
+      (db/execute-sql! temp-db "INSERT INTO artifacts (id, group_id, artifact_id) VALUES (1, 'existing', 'lib')")
+      (db/execute-sql! temp-db "INSERT INTO versions (id, version) VALUES (1, '1.0.0')")
+      (db/execute-sql! temp-db (format "INSERT INTO downloads (date, artifact_id, version_id, downloads) VALUES ('%s', 1, 1, 50)" old-date))
+
+      ;; Verify initial state
+      (let [initial-stats (db/stats temp-db)]
+        (assert= 1 (:artifacts initial-stats) "Initial: 1 artifact")
+        (assert= 1 (:download-rows initial-stats) "Initial: 1 download row"))
+
+      ;; Load and call the standalone script's update function with mock data
+      (load-file "update_clojars_stats.clj")
+      (let [update-fn (resolve 'update-database!)]
+        (update-fn temp-db :mock-data mock-data)
+
+        ;; Verify data was actually inserted
+        (let [final-stats (db/stats temp-db)]
+          (assert= true (> (:artifacts final-stats) 1)
+                   "New artifacts were inserted")
+          (assert= true (> (:download-rows final-stats) 1)
+                   "New download rows were inserted"))
+
+        ;; Running again should show up-to-date (idempotent)
+        (let [output (with-out-str (update-fn temp-db :mock-data mock-data))]
+          (assert= true (string/includes? output "up to date")
+                   "Second run reports up to date")))
+
+      ;; Test CLI: Script shows usage with no args
+      (let [result (bb "update_clojars_stats.clj")]
+        (assert= 1 (:exit result) "Exits with code 1 when no args")
+        (assert= true (string/includes? (:out result) "Usage:")
+                 "Shows usage message"))
+
+      ;; Test CLI: Script errors on missing database
+      (let [result (bb "update_clojars_stats.clj" "/nonexistent/path.sqlite")]
+        (assert= 1 (:exit result) "Exits with code 1 for missing DB")
+        (assert= true (string/includes? (:out result) "not found")
+                 "Shows not found error")))
+    (finally
+      (teardown-temp-dir!))))
+
 ;;; ============ Test Runner ============
 
 (defn run-all-tests
@@ -211,7 +265,8 @@
   (let [tests [#'test-time-injection
                #'test-status-command
                #'test-export-import-roundtrip
-               #'test-ci-workflow]
+               #'test-ci-workflow
+               #'test-standalone-update-script]
         results (for [test-fn tests]
                   (try
                     (test-fn)
@@ -239,5 +294,7 @@
   (test-time-injection)
   (test-status-command)
   (test-export-import-roundtrip)
+  (test-ci-workflow)
+  (test-standalone-update-script)
 
   :rcf)
