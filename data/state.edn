@@ -9905,6 +9905,7 @@
   ["clj-image2ascii" "clj-image2ascii"] 8750,
   ["lexical-chocolate" "lexical-chocolate"] 4611,
   ["com%2Fvertx" "vertx-opentracing"] 30137,
+  ["net.clojars.edenferreira" "set-the-stage"] 33575,
   ["arse" "arse"] 16216,
   ["com.phronemophobic.cljonda" "whisper-cpp-darwin-x86-64"] 32622,
   ["com%2Fnovemberain" "langohr"] 30138,
@@ -35522,6 +35523,7 @@
   "0.11.19" 6827,
   "0.7.275" 23319,
   "2.9.11.07" 8261,
+  "1.0.0-alpha.10" 31148,
   "3.120.1" 28431,
   "2022.35.58146" 21761,
   "20211209-055723.515cc9c8" 21252,
@@ -65157,6 +65159,6 @@
   "20210513-134542.61517e1e" 19725,
   "0.3.0-rc.2" 21735,
   "20200403-170810" 16486},
- :next-artifact-id 33575,
- :next-version-id 31148,
- :latest-date "20251221"}
+ :next-artifact-id 33576,
+ :next-version-id 31149,
+ :latest-date "20251222"}
