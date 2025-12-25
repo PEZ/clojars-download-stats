@@ -33757,6 +33757,7 @@
   ["org.clojars.ezand" "cloogle-api"] 4865,
   ["frontmatter" "frontmatter"] 10246,
   ["im.chit" "hara.class.inheritance"] 9915,
+  ["is.simm" "distributed-scope"] 33579,
   ["tiensonqin" "forked-pushy"] 21839,
   ["bootstrap" "bootstrap"] 3301,
   ["leinjacker" "leinjacker"] 632,
@@ -65165,6 +65166,6 @@
   "20210513-134542.61517e1e" 19725,
   "0.3.0-rc.2" 21735,
   "20200403-170810" 16486},
- :next-artifact-id 33579,
+ :next-artifact-id 33580,
  :next-version-id 31152,
- :latest-date "20251223"}
+ :latest-date "20251224"}
