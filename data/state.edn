@@ -21413,6 +21413,7 @@
   ["evolta" "mingler"] 22619,
   ["utilza" "utilza"] 2206,
   ["me.lafuente" "epsilon"] 31624,
+  ["co.multiply" "scoped"] 33581,
   ["postgres-redshift" "postgres-redshift"] 5302,
   ["miraj" "polymer"] 19192,
   ["org.clojars.technomancy" "clucy"] 2682,
@@ -65172,6 +65173,6 @@
   "20210513-134542.61517e1e" 19725,
   "0.3.0-rc.2" 21735,
   "20200403-170810" 16486},
- :next-artifact-id 33581,
+ :next-artifact-id 33582,
  :next-version-id 31157,
- :latest-date "20251226"}
+ :latest-date "20251227"}
