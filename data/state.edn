@@ -19154,6 +19154,7 @@
   ["re-boot" "re-boot"] 13186,
   ["datacraft-sciences" "confuse"] 19712,
   ["bluebell" "antivalue"] 20238,
+  ["dev.jcf" "winnow"] 33792,
   ["com.phronemophobic.cljonda"
    "font_ttf_source_code_pro-linux-x86-64"]
   31426,
@@ -20411,6 +20412,7 @@
   ["defclass" "vivi"] 15520,
   ["kritzelei" "kritzelei"] 11644,
   ["clj-json" "clj-json"] 380,
+  ["com.shipclojure" "leinpad"] 33793,
   ["lumanu" "clj-http"] 21827,
   ["org.rssys.apptemplate" "clj-template"] 27927,
   ["org%2Fclojars%2Fcartesiantheatrics" "bag-reader-java"] 30845,
@@ -26459,6 +26461,7 @@
   ["io.dropwizard.msgpack" "msgpack-bundle"] 15428,
   ["zwart" "zwart"] 2210,
   ["com.rallydev" "jarvis-test-platform"] 5162,
+  ["de.timokramer" "charm.clj"] 33794,
   ["lein2-test-out" "lein2-test-out"] 3953,
   ["pldb" "pldb"] 2729,
   ["lein-launch4j" "lein-launch4j"] 2570,
@@ -65682,6 +65685,6 @@
   "20210513-134542.61517e1e" 19725,
   "0.3.0-rc.2" 21735,
   "20200403-170810" 16486},
- :next-artifact-id 33792,
+ :next-artifact-id 33795,
  :next-version-id 31456,
- :latest-date "20260214"}
+ :latest-date "20260215"}
