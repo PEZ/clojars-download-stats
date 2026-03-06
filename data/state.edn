@@ -1117,6 +1117,7 @@
   ["com.github.pat-thomas" "clj-utils"] 10195,
   ["org.domaindrivenarchitecture" "dda-linkeddata-crate"] 16752,
   ["jig" "bidi"] 7983,
+  ["com.github.madhephaestus" "manifold3d"] 33861,
   ["audit" "audit"] 8484,
   ["com.dedovic" "artlib-common"] 33278,
   ["default-db-format" "default-db-format"] 15199,
@@ -17135,6 +17136,7 @@
   ["clojure-interop" "org.nd4j.context"] 24961,
   ["hiccup-pipeline" "hiccup-pipeline"] 2486,
   ["com.github.igrishaev" "pg-client"] 31577,
+  ["org.pinkgorilla" "clj-service-sente"] 33862,
   ["com.aevy" "cassaforte"] 16944,
   ["clojure-nltk" "clojure-nltk"] 3076,
   ["com.autohome.bdp.albatross" "albatross-utils"] 20431,
@@ -29777,6 +29779,7 @@
   ["org.clojars.akcbryant" "clojure-ttt"] 15980,
   ["lemon-disc" "lemon-disc"] 12430,
   ["kephale" "lwjgl-util"] 5027,
+  ["org.scicloj" "lalinea"] 33863,
   ["org.clojars.aperiodic" "jedis"] 1170,
   ["frankiesardo" "linked"] 10703,
   ["bultitude.bultitude.0.2.8.bultitude-0.2.8.jar?dummy=.maven.bultitude"
@@ -43348,6 +43351,7 @@
   "0.4.0-SNAPSHOT" 191,
   "10.117" 28510,
   "2.9.8.66" 6426,
+  "1.12.217-SNAPSHOT" 31585,
   "0.4.305" 21284,
   "v1.10-53-g2c8a873b" 15004,
   "v1.9.39-44-g107e4a66" 12294,
@@ -65880,6 +65884,6 @@
   "20210513-134542.61517e1e" 19725,
   "0.3.0-rc.2" 21735,
   "20200403-170810" 16486},
- :next-artifact-id 33861,
- :next-version-id 31585,
- :latest-date "20260304"}
+ :next-artifact-id 33864,
+ :next-version-id 31586,
+ :latest-date "20260305"}
