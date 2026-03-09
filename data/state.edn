@@ -17564,6 +17564,7 @@
   ["conduit-hornetq" "conduit-hornetq"] 3419,
   ["trout" "trout"] 14563,
   ["cljsjs" "shake"] 17455,
+  ["io.github.mlimotte" "quandary"] 33869,
   ["clj-x256" "clj-x256"] 3087,
   ["net.ulfurinn" "telemetry"] 20983,
   ["om-weasel" "lein-template"] 9195,
@@ -32517,6 +32518,7 @@
   ["paste_notes" "paste_notes"] 7714,
   ["org.clojars.pdoctor" "dst"] 8290,
   ["palisades-lakes" "benchtools"] 19736,
+  ["com.github.clojure-finance" "ecbjure"] 33870,
   ["org.clojars.klutometis" "add-classpath"] 7715,
   ["ekroon" "mount-lite"] 16946,
   ["brendanyounger" "plinth"] 12971,
@@ -53386,6 +53388,7 @@
   "1.3.191-SNAPSHOT" 27324,
   "2.14.2-0.9.4" 24941,
   "7.0.2" 9653,
+  "2026.03.1" 31592,
   "1.32.2" 7296,
   "17.06.18-SNAPSHOT" 9650,
   "0.3.0-01043fd" 8019,
@@ -65895,6 +65898,6 @@
   "20210513-134542.61517e1e" 19725,
   "0.3.0-rc.2" 21735,
   "20200403-170810" 16486},
- :next-artifact-id 33869,
- :next-version-id 31592,
- :latest-date "20260307"}
+ :next-artifact-id 33871,
+ :next-version-id 31593,
+ :latest-date "20260308"}
