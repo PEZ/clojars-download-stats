@@ -28152,6 +28152,7 @@
   ["net.clojars.unexpectedness" "clj-delegate"] 32169,
   ["ch.codesmith" "logger"] 28649,
   ["cn.leancloud" "clj-aws-s3"] 23487,
+  ["ai.dyal" "ducktape"] 34151,
   ["clj-chatterbox" "clj-chatterbox"] 18953,
   ["user.java.time" "user.java.time"] 26231,
   ["org.clojars.mrdimosthenis" "clj-synapses"] 28238,
@@ -39327,6 +39328,7 @@
   "0.9.198" 16218,
   "4.2.0-SNAPSHOT" 3814,
   "1.1011" 31421,
+  "1.1.259" 32166,
   "0.0.9-a3" 17653,
   "0.4.384" 21010,
   "9.3-1102.jdbc41" 4188,
@@ -56550,6 +56552,7 @@
   "0.0.13-alpha.6" 15868,
   "20210803-152150.c6e69ed2" 20311,
   "10.0.10" 12920,
+  "9.9.0" 32167,
   "2-alpha1" 22006,
   "20210810-210857.8975e8d5" 20320,
   "0.8.445" 22486,
@@ -66751,6 +66754,6 @@
   "20210513-134542.61517e1e" 19725,
   "0.3.0-rc.2" 21735,
   "20200403-170810" 16486},
- :next-artifact-id 34151,
- :next-version-id 32166,
- :latest-date "20260515"}
+ :next-artifact-id 34152,
+ :next-version-id 32168,
+ :latest-date "20260516"}
