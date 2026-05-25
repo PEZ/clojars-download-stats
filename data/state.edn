@@ -3297,6 +3297,7 @@
   ["xyz.zcaudate" "lib.oshi"] 32073,
   ["com._0xab" "common-clojure-platform"] 9183,
   ["com.phronemophobic.cljonda" "icu-macosx-aarch64"] 31027,
+  ["dev.skivi" "skivi"] 34188,
   ["org.clojars.thirteen37" "environ"] 4355,
   ["com%2Fgithub%2Fmrebbinghaus" "fulcro-material-ui-wrapper"] 29998,
   ["org.clojars.lovelykensho" "otm"] 14883,
@@ -42632,6 +42633,7 @@
   "0.6.10-checkout_tag_for_publish-SNAPSHOT" 14883,
   "1.1.187" 22410,
   "6.13.1-SNAPSHOT" 29181,
+  "3.161.0" 32206,
   "1.1.57" 18238,
   "0.2.3.1" 9060,
   "1.0.0.82" 29624,
@@ -66828,6 +66830,6 @@
   "20210513-134542.61517e1e" 19725,
   "0.3.0-rc.2" 21735,
   "20200403-170810" 16486},
- :next-artifact-id 34188,
- :next-version-id 32206,
- :latest-date "20260523"}
+ :next-artifact-id 34189,
+ :next-version-id 32207,
+ :latest-date "20260524"}
