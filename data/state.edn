@@ -683,6 +683,7 @@
   ["expectations.expectations.1.4.5.expectations-1.4.5.jar?f=.m2"
    "clojars"]
   19592,
+  ["dev.arkaitz" "db-base"] 34796,
   ["pjstadig" "reducible-stream"] 16790,
   ["cereal" "cereal"] 14,
   ["ensure-mounted" "ensure-mounted"] 25634,
@@ -59144,6 +59145,7 @@
   "1.238" 24020,
   "2023.03.28" 24301,
   "1.0.6-1" 8262,
+  "0.7.180" 34043,
   "0.3.0-22-la" 28339,
   "0.7.556-win-x64-SNAPSHOT" 30973,
   "v1.9.38-45-gb2c70c1" 12173,
@@ -69283,6 +69285,6 @@
   "20210513-134542.61517e1e" 19725,
   "0.3.0-rc.2" 21735,
   "20200403-170810" 16486},
- :next-artifact-id 34796,
- :next-version-id 34043,
- :latest-date "20260925"}
+ :next-artifact-id 34797,
+ :next-version-id 34044,
+ :latest-date "20260926"}
