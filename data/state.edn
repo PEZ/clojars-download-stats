@@ -11503,6 +11503,7 @@
   ["com.github.arnaudgeiser" "aleph"] 28992,
   ["org.boundary-app" "boundary-shared-ui"] 34478,
   ["org.clojars.theikkila" "lacinia-pedestal"] 19700,
+  ["dev.ggcode" "etunnel"] 34966,
   ["oconn" "re-frame-request"] 20411,
   ["io.pedestal" "pedestal.embedded"] 31984,
   ["unbot-retro" "unbot-retro"] 15919,
@@ -11523,6 +11524,7 @@
   ["birdseye" "birdseye"] 5700,
   ["dystopia" "dystopia"] 3377,
   ["org.clojars.astrangeguy" "byte-spec"] 6979,
+  ["com.vaelii" "vaelii-agents"] 34967,
   ["fi.metosin" "si-frame"] 32869,
   ["jersey-clj" "jersey-clj"] 3622,
   ["org.clojars.leanpixel" "om-fields"] 10504,
@@ -70689,6 +70691,6 @@
   "20210513-134542.61517e1e" 19725,
   "0.3.0-rc.2" 21735,
   "20200403-170810" 16486},
- :next-artifact-id 34966,
+ :next-artifact-id 34968,
  :next-version-id 35277,
- :latest-date "20261107"}
+ :latest-date "20261108"}
